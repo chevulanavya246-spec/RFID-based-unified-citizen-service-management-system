@@ -1,474 +1,119 @@
-RFID-Based Unified Citizen Service Management System
-
-📌 Project Overview
-
-The RFID-Based Unified Citizen Service Management System is an embedded system project developed using the LPC2148 ARM7 microcontroller.
-
-The system uses an RFID card as a unique citizen identification mechanism. When a citizen scans an RFID card, the RFID reader sends the card information to the LPC2148 through UART. The microcontroller verifies the received card ID with the card IDs stored in SPI EEPROM.
-
-After successful authentication, the citizen can access different services through a 16×2/20×4 LCD interface and keypad-based menu system.
-
-The project integrates RFID, UART, LCD, keypad, SPI EEPROM and RTC peripherals into a single embedded platform.
-
----
-
-🎯 Objectives
-
-- Provide a unified interface for multiple citizen services.
-- Identify users using RFID cards.
-- Authenticate RFID cards before providing access.
-- Store user information and service data in EEPROM.
-- Provide password-protected services.
-- Provide ATM-style balance operations.
-- Provide a voting facility with one-vote-per-user logic.
-- Check Driving Licence expiry using RTC.
-- Provide an officer card for administrative operations.
-- Store important information permanently in SPI EEPROM.
-- Provide valid/invalid card indications using LED and buzzer.
-
----
-
-🏗️ System Architecture
-
-                ┌─────────────────┐
-                │    RFID Card    │
-                └────────┬────────┘
-                         │
-                         ▼
-                ┌─────────────────┐
-                │   RFID Reader   │
-                └────────┬────────┘
-                         │ UART
-                         ▼
-              ┌──────────────────────┐
-              │    LPC2148 ARM7      │
-              │    Microcontroller   │
-              └───────┬──────┬───────┘
-                      │      │
-          ┌───────────┘      └────────────┐
-          ▼                               ▼
-   ┌──────────────┐                ┌──────────────┐
-   │     LCD      │                │    Keypad    │
-   │   Display    │                │   4 × 4      │
-   └──────────────┘                └──────────────┘
-          │                               │
-          └───────────┬───────────────────┘
-                      ▼
-              ┌─────────────────┐
-              │   Service Menu  │
-              └────────┬────────┘
-                       │
-       ┌───────────────┼────────────────┐
-       ▼               ▼                ▼
-   PAN CARD          ATM             VOTING
-       │               │                │
-       └───────────────┼────────────────┘
-                       ▼
-              DRIVING LICENCE
-                       │
-                       ▼
-              ┌─────────────────┐
-              │  SPI EEPROM     │
-              │   AT25LC512     │
-              └────────┬────────┘
-                       │
-                       ▼
-              ┌─────────────────┐
-              │      RTC        │
-              │ Date & Time     │
-              └─────────────────┘
+# RFID-Based Unified Citizen Service Management System
 
----
+### Embedded Systems Project Using LPC2148 ARM7
 
-🔄 Working Principle
+## 📌 Project Overview
 
-Step 1 — System Initialization
+The RFID-Based Unified Citizen Service Management System is an embedded system developed using the **LPC2148 ARM7 microcontroller**. It uses RFID-based identification to provide multiple citizen services through an LCD and keypad interface.
 
-When the system is powered ON, the LPC2148 initializes:
+The system integrates RFID, UART, SPI EEPROM, RTC, LCD, and keypad peripherals to authenticate users and manage service-related information.
 
-- UART0
-- SPI0
-- LCD
-- Keypad
-- RFID GPIO
-- RTC
+## 📸 Project Hardware Kit
 
-The system displays an RFID citizen service splash screen.
+![RFID Project Kit](images/kit_image.jpeg)
 
-The project also performs an EEPROM connectivity test. If the EEPROM is not detected, the LCD displays an EEPROM error and the system stops.
+*Hardware setup of the RFID-based citizen service management system.*
 
-Step 2 — EEPROM Initialization
+## 🏗️ System Block Diagram
 
-During the first project setup, the system checks a dedicated RFID project MAGIC/VERSION signature in EEPROM.
+![System Block Diagram](images/block_diagram.jpeg)
 
-If the signature is not available, the system writes the initial project data, including:
+*Block diagram showing the major hardware modules and their interactions.*
 
-- RFID card IDs
-- User balances
-- Voting status
-- Voting counts
-- Driving Licence expiry information
-- Password
-- RTC information
+## 🎯 Objectives
 
-The firmware then stores a project initialization marker so that the default data is not unnecessarily rewritten on every power-up.
+* Identify users using RFID cards.
+* Authenticate users using stored RFID card IDs.
+* Provide multiple citizen services through a menu-driven interface.
+* Store user information and transaction data in SPI EEPROM.
+* Implement password-protected services.
+* Provide ATM balance enquiry, deposit, and withdrawal.
+* Implement one-vote-per-user voting.
+* Check driving licence expiry using RTC.
+* Provide officer-level administrative operations.
+* Indicate valid and invalid cards using LEDs and a buzzer.
 
-Step 3 — RFID Card Scanning
+## ⚙️ Hardware Components
 
-The system waits for an RFID card.
+* LPC2148 ARM7 Microcontroller
+* RFID Reader and RFID Cards
+* 16×2/20×4 LCD
+* 4×4 Keypad
+* AT25LC512 SPI EEPROM
+* RTC Module
+* Green LED and Red LED
+* Buzzer
 
-The RFID reader sends a 10-byte packet through UART:
+## 💻 Software and Technologies
 
-[0x02] [8-byte Card ID] [0x03]
+* **Microcontroller:** LPC2148 ARM7
+* **Programming Language:** Embedded C
+* **Communication:** UART and SPI
+* **Development Environment:** Embedded C development tools
+* **Storage:** AT25LC512 SPI EEPROM
 
-The actual user/card ID used for comparison is 8 bytes. The received card data is copied from the UART receive buffer and compared against the card IDs stored in EEPROM.
+## 🔄 Working Principle
 
-Step 4 — Card Verification
+1. The system initializes the UART, SPI, LCD, keypad, RFID interface, and RTC.
+2. It checks EEPROM connectivity and project initialization data.
+3. The RFID reader reads the card and sends its data to the LPC2148 through UART.
+4. The microcontroller compares the received card ID with the IDs stored in EEPROM.
+5. For a valid citizen card, the system displays the available service menu.
+6. For an officer card, the system opens the officer menu.
+7. Invalid cards trigger the red LED and buzzer indications.
+8. Relevant user information and service data are stored or updated in EEPROM.
 
-The received RFID card is compared with four stored card entries:
+## 🧩 Main Features
 
-USER1
-USER2
-USER3
-OFFICER
+### 🪪 1. PAN Card Service
 
-If a matching card is found, the corresponding user is identified.
+* Password-protected access.
+* Displays citizen name, date of birth, and PAN number.
 
-If no card matches, the system treats it as an invalid card.
+### 💳 2. ATM Service
 
-Step 5 — Valid / Invalid Indication
+* Balance enquiry.
+* Deposit and withdrawal.
+* Transaction validation and balance updates in EEPROM.
 
-For a valid card:
+### 🗳️ 3. Voting Service
 
-GREEN LED → ON
+* Provides Party A, Party B, Party C, Party D, and NOTA options.
+* Allows one vote per registered user.
+* Stores voting status and vote counts in EEPROM.
 
-For an invalid card:
+### 🚗 4. Driving Licence Service
 
-RED LED + BUZZER → ON
+* Checks driving licence expiry using stored expiry information and RTC date.
+* Provides an officer function to update expired licence information.
 
-The LCD also displays the corresponding access status.
+### 👮 5. Officer Menu
 
----
+* Reset voting counts and user voting flags.
+* Update driving licence expiry information.
 
-👤 User Services
+### 🔐 6. Password Management
 
-After a valid citizen card is authenticated, the system provides a service menu.
+* Password-protected access.
+* Three-attempt password verification.
+* Password change functionality with EEPROM storage.
 
-The main services implemented are:
-
-1. PAN CARD
-2. ATM
-3. VOTING
-4. DRIVING LICENCE
-5. EXIT
-
----
-
-🪪 1. PAN Card Service
-
-The PAN Card service is password protected.
-
-After successful password authentication, the system displays:
-
-- Citizen Name
-- Date of Birth
-- PAN Number
-
-The PAN information is stored in the project configuration and selected according to the authenticated user.
-
----
-
-💳 2. ATM Service
-
-The ATM module provides:
-
-Balance Enquiry
-
-The current balance is read from EEPROM and displayed on the LCD.
-
-Withdrawal
-
-The system validates:
-
-- Minimum withdrawal amount
-- Maximum transaction amount
-- Valid note multiples
-- Available balance
-- Minimum remaining balance
-
-The current implementation uses:
-
-Minimum withdrawal : ₹100
-Maximum transaction: ₹45,000
-Minimum balance    : ₹500
-
-The balance is written back to EEPROM after a successful transaction.
-
-Deposit
-
-The user can deposit money after authentication.
-
-The system validates the transaction amount and stores the updated balance in EEPROM.
-
----
-
-🗳️ 3. Voting Service
-
-The voting module provides a one-vote-per-user mechanism.
-
-The LCD displays five choices:
-
-1 - Party A
-2 - Party B
-3 - Party C
-4 - Party D
-5 - NOTA
-
-After a vote is recorded:
-
-Party Count → Incremented
-User Vote Flag → VOTED
-
-If the same user tries to vote again, the system displays:
-
-Already Voted!
-One vote per user
-
-The voting status and vote counts are stored in EEPROM.
-
----
-
-🚗 4. Driving Licence Service
-
-The Driving Licence module uses:
-
-EEPROM → Stored expiry date
-RTC    → Current date/time
-
-The stored Driving Licence expiry date is compared with the current RTC date.
-
-The system can therefore determine whether the licence is:
-
-VALID
-
-or
-
-EXPIRED
-
-The project also provides an officer function for updating an expired licence expiry date.
-
----
-
-👮 Officer Card
-
-The project includes a separate Officer RFID Card.
-
-When the officer card is scanned, the system opens:
-
--- OFFICER MENU --
-
-1 - Reset Votes
-2 - Set DL Expiry
-* - Exit
-
-Reset Votes
-
-This operation resets:
-
-- Party A count
-- Party B count
-- Party C count
-- Party D count
-- NOTA count
-- User voting flags
-
-Set Driving Licence Expiry
-
-The officer can select a user through the keypad.
-
-The system checks the existing expiry date against the RTC date. If the licence has expired, the system updates the expiry date using the current date and a 20-year period.
-
----
-
-🔐 Password Protection
-
-The project uses a password stored in EEPROM.
-
-Password verification provides three attempts.
-
-Correct Password
-       ↓
-Access Granted
-
-Wrong Password
-       ↓
-Attempts Remaining
-
-3 Wrong Attempts
-       ↓
-ACCESS LOCKED
-
-The user can also change the password by:
-
-Current Password
-       ↓
-New Password
-       ↓
-Confirm Password
-       ↓
-Password Saved to EEPROM
-
-The password is therefore retained even after power is removed.
-
----
-
-💾 SPI EEPROM
-
-The project uses AT25LC512 SPI EEPROM for non-volatile data storage.
-
-EEPROM is used to store project information such as:
-
-- RFID card IDs
-- Password
-- User balances
-- Voting flags
-- Party vote counts
-- Driving Licence expiry dates
-- RTC saved values
-- Project initialization information
-
-The source code includes dedicated SPI and SPI EEPROM modules.
-
----
-
-🕐 RTC
-
-The RTC module provides:
-
-- Current time
-- Current date
-- Day information
-
-The project saves RTC information to EEPROM and restores it during initialization when the project has already been initialized.
-
-RTC is particularly important for the Driving Licence expiry verification.
-
----
-
-📺 LCD
-
-The LCD is used to display:
-
-- System startup messages
-- RFID scanning status
-- Valid/invalid card status
-- User information
-- Service menus
-- Password prompts
-- ATM transactions
-- Voting options
-- Driving Licence information
-- Officer menu
-- Error messages
-
-The repository contains dedicated LCD source and header files.
-
----
-
-⌨️ Keypad
-
-The keypad provides user input for:
-
-- Service selection
-- Password entry
-- ATM amount entry
-- Voting selection
-- Officer operations
-- Navigation and exit
-
-The project contains separate keypad source, header and definition files.
-
----
-
-📡 UART
-
-UART0 provides communication between the RFID reader and LPC2148.
-
-The RFID data is received through the UART interrupt mechanism.
-
-The firmware waits for the complete RFID frame, copies the card ID and then compares it with the card IDs stored in EEPROM.
-
----
-
-🔌 SPI
-
-SPI0 is used for communication between the LPC2148 and the SPI EEPROM.
-
-The project contains:
-
-spi.c
-spi.h
-spi_defines.h
-spi_eeprom.c
-spi_eeprom.h
-spi_eeprom_defines.h
-
-These modules are included in the uploaded project structure.
-
----
-
-🧩 Hardware Components
-
-Based on the project source structure, the main hardware modules are:
-
-Component| Purpose
-LPC2148 ARM7| Main microcontroller
-RFID Reader| Reads RFID card
-RFID Card| Citizen identification
-LCD| Displays information
-4×4 Keypad| User input
-AT25LC512 EEPROM| Non-volatile data storage
-RTC| Date and time
-Green LED| Valid card indication
-Red LED| Invalid card indication
-Buzzer| Invalid card indication
-
-The RFID source specifically configures the indication outputs as GREEN LED = P0.19, RED LED = P0.20 and BUZZER = P0.21.
-
----
-
-💻 Software / Development
-
-Microcontroller
-
-LPC2148 ARM7
-
-Programming Language
-
-Embedded C
-
-Main File
-
-main_rfid.c
-
-Startup File
-
-Startup.s
-
-Communication Interfaces
-
-UART
-SPI
-
-Storage
-
-AT25LC512 SPI EEPROM
-
----
-
-📂 Project Structure
-
-RFID-based-unified-citizen-service-management-system/
+## 📡 Communication and Storage
+
+* **UART0:** Communication between the RFID reader and LPC2148.
+* **SPI0:** Communication between the LPC2148 and AT25LC512 EEPROM.
+* **EEPROM:** Stores RFID card IDs, passwords, balances, voting information, and driving licence expiry data.
+* **RTC:** Provides date and time information for date-dependent operations.
+* **LCD and Keypad:** Provide user interaction and menu navigation.
+
+## 📂 Project Structure
+
+```text
+RFID-Based-Unified-Citizen-Service-Management-System/
+│
+├── images/
+│   ├── kit_image.jpg
+│   └── block_diagram.png
 │
 ├── headerfiles/
 │   ├── defines.h
@@ -495,227 +140,38 @@ RFID-based-unified-citizen-service-management-system/
 │   └── uart.c
 │
 ├── Startup.s
-│
 └── main_rfid.c
+```
 
-The uploaded project archive lists these modules, including the RFID, menu, UART, RTC, SPI EEPROM, LCD, keypad and delay files.
+## 🚀 How to Use
 
----
-
-🔄 Complete Project Flow
-
-             POWER ON
-                │
-                ▼
-       Initialize LPC2148
-                │
-       ┌────────┼─────────┐
-       ▼        ▼         ▼
-      UART     SPI       LCD
-       │        │         │
-       └────────┼─────────┘
-                ▼
-          Initialize RTC
-                │
-                ▼
-        Check EEPROM
-                │
-       ┌────────┴────────┐
-       │                 │
-     Error              OK
-       │                 │
-       ▼                 ▼
-   Stop System     Check Project
-                  Initialization
-                       │
-                       ▼
-                 Waiting Screen
-                       │
-                       ▼
-                  Scan RFID
-                       │
-                       ▼
-                Receive via UART
-                       │
-                       ▼
-              Compare with EEPROM
-                       │
-          ┌────────────┼────────────┐
-          │            │            │
-       Invalid       User        Officer
-          │            │            │
-          ▼            ▼            ▼
-     Red + Buzzer   Service      Officer
-                    Menu          Menu
-                       │            │
-             ┌─────────┼────────┐   ├── Reset Votes
-             │         │        │   └── Set DL Expiry
-             ▼         ▼        ▼
-           PAN        ATM      Voting
-             │         │        │
-             └─────────┼────────┘
-                       ▼
-                 Driving Licence
-                       │
-                       ▼
-              EEPROM / RTC Data
-                       │
-                       ▼
-                 Display Result
-                       │
-                       ▼
-                 Back to Scan
-
----
-
-⭐ Key Features
-
-- RFID-based identification
-- LPC2148 ARM7 embedded platform
-- UART-based RFID communication
-- SPI EEPROM data storage
-- Password-protected services
-- PAN Card information
-- ATM balance, withdrawal and deposit
-- One-vote-per-user voting
-- NOTA option
-- Driving Licence expiry checking
-- RTC-based date/time management
-- Officer administration card
-- Vote reset facility
-- Password change facility
-- Valid card green LED indication
-- Invalid card red LED + buzzer indication
-- EEPROM initialization protection
-- Automatic menu timeout
-- "*" key for menu exit
-
-The current menu implementation also uses a 10-second automatic timeout on applicable screens, while "*" can be used to exit screens immediately.
-
----
-
-🛠️ Important Implementation Details
-
-RFID Packet
-
-Start Byte
-    ↓
-0x02
-    ↓
-8-byte RFID Card ID
-    ↓
-0x03
-
-Card Verification
-
-RFID Card
-    ↓
-UART
-    ↓
-LPC2148
-    ↓
-Read stored IDs from EEPROM
-    ↓
-Compare
-    ↓
-USER1 / USER2 / USER3 / OFFICER
-             or
-        INVALID CARD
-
-Data Persistence
-
-User Action
-    ↓
-Update Data
-    ↓
-Write to EEPROM
-    ↓
-Data remains available after restart
-
----
-
-🚀 How to Use
-
-1. Power ON the LPC2148 system.
-2. Wait for the citizen service screen.
+1. Power on the LPC2148 hardware.
+2. Wait for the RFID scanning screen.
 3. Scan a registered RFID card.
-4. The system verifies the card.
-5. For a valid user, the system displays the user's name.
-6. Select a service using the keypad.
-7. Enter the password when required.
-8. Perform the selected operation.
-9. Data is stored/updated in EEPROM where required.
-10. Exit the service to return to the RFID waiting screen.
+4. Select a service using the keypad after successful authentication.
+5. Enter the password when required.
+6. Perform the selected operation and view the result on the LCD.
+7. Use the officer card to access administrative functions.
 
-For an officer card, the system opens the officer administration menu.
+## 🎓 Learning Outcomes
 
----
+This project demonstrates practical implementation of:
 
-🧪 Error Handling
+* ARM7 microcontroller programming
+* Embedded C development
+* RFID interfacing
+* UART communication and interrupt-based reception
+* SPI communication and EEPROM interfacing
+* LCD and keypad interfacing
+* RTC integration
+* Non-volatile data storage
+* Menu-driven embedded system design
 
-The project includes handling for:
+## 👩‍💻 Author
 
-- Invalid RFID card
-- EEPROM not connected
-- Wrong password
-- Three failed password attempts
-- Insufficient ATM balance
-- Invalid ATM amount
-- Expired Driving Licence
-- Already-voted user
-- Invalid keypad input
-- Menu timeout
-
----
-
-
-📚 Modules
-
-RFID Module
-    ↓
-UART Module
-    ↓
-LPC2148 Processing
-    ↓
-LCD + Keypad Interface
-    ↓
-Menu Management
-    ↓
-SPI EEPROM
-    ↓
-RTC
-    ↓
-Citizen Services
-
-The repository separates these functions into dedicated source and header modules, making the project easier to maintain and understand.
-
----
-
-🔮 Future Enhancements
-
-Possible future improvements include:
-
-- Fingerprint authentication
-- Multiple RFID readers
-- Secure encrypted citizen data
-- Larger external storage
-- Real government database integration
-- Online service synchronization
-- GSM/SMS notifications
-- ESP32/IoT connectivity
-- Web-based administration dashboard
-- Cloud database integration
-- Real-time transaction logging
-- Biometric + RFID multi-factor authentication
-
----
-
-👩‍💻 Author
-
-Chevula Navya
+**Chevula Navya**
 
 B.Tech – Electronics and Communication Engineering
-
 
 
 ---
